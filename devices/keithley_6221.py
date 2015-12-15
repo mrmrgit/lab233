@@ -11,10 +11,10 @@ ky.close()
 '''
 def init_device(**kwargs):
     try:
-        cs = Keithley_6221(lan_keithley6221, **kwargs) #TEST IT!!!
-        cs.term_chars='\n'                              #TEST IT!!!
+        cs = Keithley_6221(TCPIP_KEITHLEY_6221, **kwargs) 
+        cs.term_chars='\n'                             
     except VisaIOError:
-        cs = Keithley_6221(gpib_keithley6221,**kwargs)
+        cs = Keithley_6221(GPIB_KEITHLEY_6221, **kwargs)
     return cs
 
 #Class which inherits from visa.Instrument. Doing it this way, the new instance

@@ -12,15 +12,15 @@ vna.close()
 
 def init_device(**kwargs):
     try:
-        agi = Agilent_N5062A(lan_agilentE5062A, **kwargs) 
+        agi = Agilent_E5062A(TCPIP_AGILENT_E5062A, **kwargs) 
     except VisaIOError:
-        agi = Agilent_N5062A(gpib_agilentE5062A, **kwargs)
+        agi = Agilent_E5062A(GPIB_AGILENT_E5062A, **kwargs)
     return agi
 
 #Class which inherits from visa.Instrument. Doing it this way, the new instance
 #will have both methods of parent class visa.Instrument such as write(), read()
 #and also user's methods defined here. 
-class Agilent_N5062A(Instrument):  
+class Agilent_E5062A(Instrument):  
     def clear(self):
         self.write("*CLS")
 

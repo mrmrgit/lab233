@@ -25,7 +25,7 @@ from .dev_addrs import *
 from time import *
 
 def init_device(**kwargs):
-    itc = Oxford_ITC(serial_oxfordITC,**kwargs)
+    itc = Oxford_ITC(ASRL_OXFORD_ITC, **kwargs)
     itc.stop_bits = 2
     return itc
 

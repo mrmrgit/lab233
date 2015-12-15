@@ -12,9 +12,9 @@ import numpy as np
 
 def init_device(**kwargs):
     try:
-        agi = Agilent_N5242A(lan_agilentN5242A, **kwargs) 
+        agi = Agilent_N5242A(TCPIP_AGILENT_N5242A, **kwargs) 
     except VisaIOError:
-        agi = Agilent_N5242A(gpib_agilentN5242A, **kwargs)
+        agi = Agilent_N5242A(GPIB_AGILENT_N5242A, **kwargs)
     return agi
 
 #Class which inherits from visa.Instrument. Doing it this way, the new instance
@@ -292,15 +292,29 @@ class Agilent_N5242A(Instrument):
         phs_f = np.array(map(float,phs.split(',')))
         return amp_f, phs_f
 
+    def run_transM_measXY(self):
+        #matus -for MAG
+        '''
+        output X and Y quadratures (lin)
+        Transmission: 10*log_10(x_lin**2+y_lin**2) [dB]
+        '''
+        self.write('sens:swe:mode gro;*wai')
+        self.write('calc:form pol')
+        data = self.ask('calc:data? fdata')
+        data_f = np.array(map(float,data.split(',')))
+        x_lin = data_f[:len(data_f):2]
+        y_lin = data_f[1:len(data_f):2]
+        return x_lin, y_lin
+    
     def set_power_ifbw(self, power_dBm, power_dBm_ref, ifbw_ref):
         '''
         setting the IFBW according to applied power to get similar
         level of noise. IFBW is adjusted to power_ref_dBm and ifbw_ref
         '''
         ifbws = [
-            1, 2,3 ,5 ,7 ,10 ,15 ,20 ,30 ,50 ,70 ,100 ,150 ,200
-            ,300, 500, 700, 1e3, 1.5e3 ,2e3 ,3e3 ,5e3 ,7e3 ,10e3
-            ,15e3 ,20e3 ,30e3
+            1, 2, 3, 5, 7, 10, 15, 20, 30, 50, 70, 100, 150, 200,
+            300, 500, 700, 1e3, 1.5e3, 2e3, 3e3, 5e3, 7e3, 10e3,
+            15e3, 20e3, 30e3
             ]
 
         ifbw_calc = ifbw_ref*10**((power_dBm-power_dBm_ref)/10)

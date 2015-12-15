@@ -2,7 +2,7 @@ from .dev_addrs import *
 from visa import Instrument, VisaIOError
 
 def init_device(**kwargs):
-    ps = Agilent_3648A(gpib_agilent3648A, **kwargs)
+    ps = Agilent_3648A(GPIB_AGILENT_E3648A, **kwargs)
     return ps
 
 #Class which inherits from visa.Instrument. Doing it this way, the new instance

@@ -40,8 +40,8 @@ def calib(volt):
 
 class Mag():
     def __init__(self):
-        self.ps=visa.instrument(gpib_agilentE3648A)
-        self.multi = visa.instrument(gpib_HP33401A)
+        self.ps=visa.instrument(GPIB_AGILENT_E3648A)
+        self.multi = visa.instrument(GPIB_HP_33401A)
 
     def __repr__(self):
         return '<lab233 electomagnet>'

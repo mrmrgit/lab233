@@ -14,7 +14,7 @@ data.write_settings(sett)
 data.write_data([1,2,3,4,[0.5,0.6,0.7,0.8]])
 data.fill_footer()
 ...
-Last update: 7.9.2015
+Last update: 5.11.2015
 '''
 
 import time
@@ -38,9 +38,11 @@ class Data():
         if file_path=='':
             self.file_name=meas_name+self.specifier
         else:
-            if os.system('cd %s'%file_path)==1: os.system('mkdir %s'%file_path)
+            if os.system('cd %s'%file_path)==1:
+                os.system('mkdir %s'%file_path)
+                print('Destination folder was created.')
             self.file_name = file_path+'\\'+meas_name+self.specifier
-
+            
         #if file already exists, this part of code increases specifier
         #or add ".0" at the end of the file name. Specifier ending by 9
         #is increased to 9.0
