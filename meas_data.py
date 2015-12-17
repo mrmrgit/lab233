@@ -1,12 +1,12 @@
 '''
-Data handling library.
+Data handling module.
 
 Usage:
 
 import lab233.meas_data
 sett = {
-	'current': cur = 1e-4,			
-	'voltage_range': v_rng = 100e-3,
+	'current': 1e-4,			
+	'voltage_range': 100e-3,
 }
 data= lab233.meas_data.Data('new_data','0.0')
 data.fill_header('MoC',RT'')
@@ -14,9 +14,9 @@ data.write_settings(sett)
 data.write_data([1,2,3,4,[0.5,0.6,0.7,0.8]])
 data.fill_footer()
 ...
-Last update: 5.11.2015
+Matus Rehak
+Last update: 10.12.2015
 '''
-
 import time
 import os
 from string import digits
@@ -27,7 +27,7 @@ class Data():
         Creates a data file with name meas_name+specifier . dat in
         file_path. Data are separated by delimiter.
         Specifier serves for distinguishing between the measurements.
-        It is automatically increased if file with the specific name
+        It is automatically increased if a file with the specific name
         already exists.
         
         meas_name, specifier - strings,
@@ -35,14 +35,12 @@ class Data():
         '''
         self.delimiter = delimiter
         self.specifier = specifier
-        if file_path=='':
-            self.file_name=meas_name+self.specifier
-        else:
-            if os.system('cd %s'%file_path)==1:
-                os.system('mkdir %s'%file_path)
-                print('Destination folder was created.')
-            self.file_name = file_path+'\\'+meas_name+self.specifier
-            
+
+        if file_path and (not os.path.exists(file_path)):
+            os.makedirs(file_path)
+        
+        self.file_name = os.path.join(file_path, meas_name + self.specifier)
+        
         #if file already exists, this part of code increases specifier
         #or add ".0" at the end of the file name. Specifier ending by 9
         #is increased to 9.0
@@ -54,12 +52,9 @@ class Data():
                 self.specifier = "".join(ls)
             else:
                 self.specifier += '.0'
-                
-            if file_path=='':
-                self.file_name = meas_name + self.specifier
-            else:
-                self.file_name = file_path + '\\' + meas_name + self.specifier
-                
+
+            self.file_name = os.path.join(file_path, meas_name + self.specifier)    
+               
         data=open(self.file_name+'.dat','a')
         data.close()
 
@@ -79,7 +74,7 @@ class Data():
 
     def fill_footer(self):
         '''
-        Writes data to the file, single value or array (N=1) of values
+        Adds the time of the end of the measurement.
         '''
         data=open(self.file_name+'.dat','a')
         data.write('\n#END OF MEASUREMENT:\t\t%s\n' %time.ctime())
@@ -87,6 +82,9 @@ class Data():
         data.close()        
  
     def write_data(self,data_list):
+        '''
+        Writes data to the file, single value or array (N=1) of values
+        '''
         data=open(self.file_name+'.dat','a')
         for d in data_list:
             if hasattr(d,'__iter__'):
