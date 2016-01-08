@@ -66,42 +66,38 @@ class Data():
         Fills header of the data file.
         It add following lines: date, sample descriptions, mesaurement details
         '''
-        data=open(self.file_name+'.dat','a')
-        data.write('\n#DATE:\t\t%s\n' %time.ctime())     
-        data.write('#SAMPLE:\t\t%s\n' %sample)
-        data.write('#MEASUREMENT:\t%s\n' %meas_type)
-        data.close()
+        with open(self.file_name+'.dat','a') as data:
+            data.write('\n#DATE:\t\t%s\n' %time.ctime())     
+            data.write('#SAMPLE:\t\t%s\n' %sample)
+            data.write('#MEASUREMENT:\t%s\n' %meas_type)
 
     def fill_footer(self):
         '''
         Adds the time of the end of the measurement.
         '''
-        data=open(self.file_name+'.dat','a')
-        data.write('\n#END OF MEASUREMENT:\t\t%s\n' %time.ctime())
-        data.write('\n\n#--------------------------------------------------------------------------')
-        data.close()        
+        with open(self.file_name+'.dat','a') as data:
+            data.write('\n#END OF MEASUREMENT:\t\t%s\n' %time.ctime())
+            data.write('\n\n#--------------------------------------------------------------------------')      
  
     def write_data(self,data_list):
         '''
         Writes data to the file, single value or array (N=1) of values
         '''
-        data=open(self.file_name+'.dat','a')
-        for d in data_list:
-            if hasattr(d,'__iter__'):
-                for di in d:
-                    data.write(str(di)+self.delimiter)
-            else:
-                data.write(str(d)+self.delimiter)
-        data.write('\n')    
-        data.close()
+        with open(self.file_name+'.dat','a') as data:
+            for d in data_list:
+                if hasattr(d,'__iter__'):
+                    for di in d:
+                        data.write(str(di)+self.delimiter)
+                else:
+                    data.write(str(d)+self.delimiter)
+            data.write('\n')    
         
     def write_note(self,note):
         '''
         Writes a note to the file.
         '''
-        data=open(self.file_name+'.dat','a')
-        data.write('#%s\n'%note)
-        data.close()
+        with open(self.file_name+'.dat','a') as data:
+            data.write('#%s\n'%note)
 
     def write_settings(self, dict_of_variables):
         '''
@@ -109,14 +105,13 @@ class Data():
         an iterable, it writes first value, last value ,its length and then
         all the values.
         '''
-        data=open(self.file_name+'.dat','a')
-        for k,v in dict_of_variables.iteritems():
-            if hasattr(v,'__iter__'):
-                data.write('#%s[0]=%s \t'%(k,v[0]))
-                data.write('%s[-1]=%s \t'%(k,v[-1]))
-                data.write('length %s=%s \t values: '%(k,len(v)))
-                for v_i in v: data.write('%s \t'%v_i)
-            else:
-                data.write('#%s=%s \t'%(k,v))
-            data.write('\n')
-        data.close()
+        with open(self.file_name+'.dat','a') as data:
+            for k,v in dict_of_variables.iteritems():
+                if hasattr(v,'__iter__'):
+                    data.write('#%s[0]=%s \t'%(k,v[0]))
+                    data.write('%s[-1]=%s \t'%(k,v[-1]))
+                    data.write('length %s=%s \t values: '%(k,len(v)))
+                    for v_i in v: data.write('%s \t'%v_i)
+                else:
+                    data.write('#%s=%s \t'%(k,v))
+                data.write('\n')
