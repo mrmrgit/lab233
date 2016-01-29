@@ -4,8 +4,8 @@ home-made current source with +/-12 V voltage reference (TESLA BK126),
 electromagnet and Hall sensor.
 
 example program:
-import LAB.magnet
-mg = LAB.magnet.MAG()
+from lab233.devices import magnet
+mg = magnet.MAG()
 mg.reset()
 mg.set_current(50e-3)
 b=mg.get_field()
@@ -16,8 +16,8 @@ mg.close(outp='OFF')
 power source (Agilent E3648A) and multimeter (HP 34401A) can be individually
 controlled e.g.:
 
-import LAB.magnet
-mg = LAB.magnet.Mag()
+from lab233.devices import magnet
+mg = magnet.Mag()
 mg.reset()
 print mg.ps.ask('syst:err?')
 print mg.multi.ask('syst:err?')
@@ -25,7 +25,7 @@ mg.close(outp='OFF')
 
 Calibration date: Wed Jul 30 16:39:55 2014
 
-Last update: 22.7.2015
+Last update: 29.1.2016
 '''
 
 import visa
