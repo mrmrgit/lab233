@@ -29,7 +29,7 @@ Last update: 29.1.2016
 '''
 
 import visa
-from .dev_addrs import *
+from .dev_addrs import GPIB_AGILENT_E3648A, GPIB_HP_33401A
 from time import sleep
         
 def calib(volt):
@@ -50,9 +50,10 @@ class Mag():
         curr = float(self.ps.ask('MEAS:CURR:DC?'))
         if (self.ps.ask('outp?')=='1') and (curr>0.001):
             curr = float(self.ps.ask('CURR?'))
-            for _ in range(int(round(curr*1e4))):
+            for i in range(int(round(curr*1e4))):
                 self.ps.write('CURR down')
                 sleep(0.001)
+                if i%200 == 0: print self.get_field()
         
         self.ps.write('*rst')
         self.ps.write('*cls')
@@ -107,53 +108,53 @@ class Mag():
         if curr*curr0>=0:
             if relay0*curr<0:
                 self.ps.write('outp:rel '+str((1-relay0)/2)) #change relay state
-                print 'CLICK'####### VYMAZ
+                print 'CLICK'
+                
             if abs(curr)>abs(curr0):
-                for _ in range(int(round(abs(curr0-curr)*1e4))):
-                    self.ps.write('CURR up')
-                    sleep(slp)
-                    if _==200: print self.get_field()####### VYMAZ
+                for i in range(int(round(abs(curr0-curr)*1e4))):
+                    self._step_current('up', slp, i)
+
             elif abs(curr)<abs(curr0):
                 if curr==0:  #problem with step 1e-4 -> 0.0, it has to be done like this
-                    for _ in range(int(round(abs(curr0)*1e4))-2):
-                        self.ps.write('CURR down')
-                        sleep(slp)
-                        if _==200: print self.get_field()######### VYMAZ
+                    for i in range(int(round(abs(curr0)*1e4))-2):
+                        self._step_current('down', slp, i)
                     self.ps.write('curr 0')
+
                 else:
-                    for _ in range(int(round(abs(curr0-curr)*1e4))):
-                        self.ps.write('CURR down')
-                        sleep(slp)
-                        if _==200: print self.get_field()########## VYMAZ
+                    for i in range(int(round(abs(curr0-curr)*1e4))):
+                        self._step_current('down', slp, i)
+
         else:
-            for _ in range(int(round(curr_abs0*1e4))-2):#problem with step 1e-4 -> 0.0, it has to be done like this
-                self.ps.write('CURR down')
-                sleep(slp)
-                if _==200: print self.get_field()########## VYMAZ
+            for i in range(int(round(curr_abs0*1e4))-2):#problem with step 1e-4 -> 0.0, it has to be done like this
+                self._step_current('down', slp, i)
+
             self.ps.write('curr 0')
             self.ps.write('outp:rel '+str((1-relay0)/2)) #change relay state
-            print 'CLICK'####### VYMAZ
-            for _ in range(int(round(abs(curr*1e4)))):
-                self.ps.write('CURR up')
-                sleep(slp)
-                if _==200: print self.get_field()########## VYMAZ
+            print 'CLICK'
+            for i in range(int(round(abs(curr*1e4)))):
+                self._step_current('up', slp, i)
         
         #checking if the field is stabilized:
         flds=list()
-        for _ in range(5): flds.append(self.get_field())
+        for i in range(5): flds.append(self.get_field())
 
         while (max(flds)-min(flds))>0.015:
             flds.pop(0)
             flds.append(self.get_field())
             sleep(0.01)
-                    
-    def set_field(self,fld):
+
+    def _step_current(self, direction, slp, it):
+        self.ps.write('CURR '+direction)    #up or down
+        sleep(slp)
+        if it%200 == 0: print "B = {:10.3f} mT".format(self.get_field())
+        
+    def set_field(self, fld):
         '''
         NOT IMPLEMENTED
         '''
         pass
 
-    def get_errs(self):#test
+    def get_errs(self):
         ret='Power source errors: '
         err = self.ps.ask('syst:err?')
         ret+=err
