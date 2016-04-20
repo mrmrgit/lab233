@@ -292,6 +292,26 @@ class Agilent_N5242A(Instrument):
         phs_f = np.array(map(float,phs.split(',')))
         return amp_f, phs_f
 
+    def set_reflectM_meas(self, power, f1, f2, nf, ifbw, avg):
+        #matus -for MAG 
+        self.write('syst:fpr')
+        self.write('*cls')
+
+        self.write('disp:wind:stat on')
+        self.write('calc:par:def:ext m,S11')
+        self.write('disp:wind:trac:feed m')
+        self.write('calc:par:sel m')
+        self.write('sour:pow %f' %power)
+        self.write('sens:freq:star %f' %f1)
+        self.write('sens:freq:stop %f' %f2)
+        self.write('sens:swe:poin %i' %nf)
+        self.write('sens:band %f' %ifbw)
+        self.write('sens:aver on')
+        self.write('sens:aver:coun %i' %avg)
+        self.write('sens:swe:gro:coun %i'% avg)
+            
+        self._check_errors()#####
+        
     def run_transM_measXY(self):
         #matus -for MAG
         '''
