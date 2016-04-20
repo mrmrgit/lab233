@@ -5,7 +5,7 @@ electromagnet and Hall sensor.
 
 example program:
 from lab233.devices import magnet
-mg = magnet.MAG()
+mg = magnet.Mag()
 mg.reset()
 mg.set_current(50e-3)
 b=mg.get_field()
@@ -61,7 +61,12 @@ class Mag():
         self.ps.write('curr:step 1e-4')
         self.ps.write('CURR 0.0')
         self.ps.write('VOLT 20.0')
-        self.ps.write('OUTP ON')            
+        self.ps.write('OUTP ON')
+        sleep(2)
+        self.ps.write('OUTP:REL 1')
+        sleep(2)
+        self.ps.write('OUTP:REL 0')
+        sleep(2)
     
     def get_current(self):
         curr = float(self.ps.ask('MEAS:CURR:DC?'))
