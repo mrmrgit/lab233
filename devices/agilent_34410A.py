@@ -1,4 +1,4 @@
-from .dev_addrs import *
+from .dev_addrs import GPIB_AGILENT_33401A
 from visa import Instrument, VisaIOError
 
 def init_device(**kwargs):

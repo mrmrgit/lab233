@@ -21,7 +21,7 @@ Matus Rehak
 '''
 
 from visa import SerialInstrument
-from .dev_addrs import *
+from .dev_addrs import ASRL_OXFORD_ITC
 from time import *
 
 def init_device(**kwargs):

@@ -6,7 +6,7 @@ vna.set_BW(1,100)                      #user's defined method
 vna.close()
 '''
 
-from .dev_addrs import *
+from .dev_addrs import TCPIP_AGILENT_N5242A, GPIB_AGILENT_N5242A
 from visa import Instrument, VisaIOError
 import numpy as np
 

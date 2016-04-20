@@ -6,7 +6,7 @@ BPG_GET_FREQUENCY (0x85 command) does not work, returns four '0x00' bytes
 '''
 
 import serial
-from .dev_addrs import *
+from .dev_addrs import COM_PAT_3000
 
 class Pat_3000(object):
     def __init__(self):

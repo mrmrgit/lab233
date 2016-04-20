@@ -1,4 +1,4 @@
-from .dev_addrs import *
+from .dev_addrs import TCPIP_KEITHLEY_6221, GPIB_KEITHLEY_6221
 from visa import Instrument, VisaIOError
 #ak chceme zmenit komunikacny interface(GPIB,LAN), treba ho inicializovat na pristroji:
 #tlacitko COMM a v menu zvolit interface

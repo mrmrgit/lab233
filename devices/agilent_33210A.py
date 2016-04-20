@@ -1,4 +1,4 @@
-from .dev_addrs import *
+from .dev_addrs import TCPIP_AGILENT_33210A
 from visa import Instrument, VisaIOError
 
 def init_device(**kwargs):

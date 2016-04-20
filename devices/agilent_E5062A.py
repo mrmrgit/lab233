@@ -1,4 +1,4 @@
-from .dev_addrs import *
+from .dev_addrs import TCPIP_AGILENT_E5062A, GPIB_AGILENT_E5062A
 from visa import Instrument, VisaIOError
 import numpy as np
 from time import sleep
