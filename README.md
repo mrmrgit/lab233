@@ -11,7 +11,7 @@ gnuplot 4.6 patchlevel 6
 + drivers for the devices
 
 python packages:
-pyvisa 1.4
-numpy 1.9.2
-scipy 0.16.0
-matplotlib 1.1.0
+pyvisa 1.4, 
+numpy 1.9.2, 
+scipy 0.16.0, 
+matplotlib 1.1.0 
