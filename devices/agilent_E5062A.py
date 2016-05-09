@@ -21,143 +21,7 @@ def init_device(**kwargs):
 #will have both methods of parent class visa.Instrument such as write(), read()
 #and also user's methods defined here. 
 class Agilent_E5062A(Instrument):  
-    def clear(self):
-        self.write("*CLS")
-
-    def preset(self):
-        self.write("*RST")
-
-    def read_error(self):
-        return self.ask("SYST:ERR?")
-
-    def turn_on_disp(self,ndisp):
-        self.write("DISP:WIND%s:ACT"%ndisp)
-
-    def select_trace(self,nCalc,par):
-        self.write('CALC%s:PAR%s:SEL'%(nCalc,par))
-
-    def create_simple_meas(self,nCalc,Spar,fData):    
-        self.write(":CALC%s:PAR:COUN 1"%nCalc)
-        self.write(":CALC%s:PAR:DEF %s"%(nCalc,Spar))
-        self.write(":DISP:WIND%s:ACT"%nCalc)
-        self.write(":CALC%s:FORM %s"%(nCalc,fData))
-
-    def auto_scale(self,wind,trace):
-        self.write("DISP:WIND%s:TRAC%s:Y:AUTO"%(wind,trace))
-
-    def split_display(self,N):
-        """
-        {D1|D12|D1_2|D112|D1_1_2|D123|D1_2_3|D12_33|D11_23|D13_23|
-        D12_13| D1234|D1_2_3_4|D12_34}
-        """
-        if N==1:
-            dispConfig='D1'
-        elif N==2:
-            dispConfig='D1_2'
-        elif N==3:
-            dispConfig='D1_2_3'
-        elif N==4:
-            dispConfig='D1234'
-        else:
-            print "to many traces"
-            
-        self.write("DISP:SPLit %s"%dispConfig)
-
-    def set_trigger_source(self,source):
-        self.write(':TRIG:SOUR %s'%source)
-
-    def send_trigger(self):
-        self.write(":TRIG:SING;*WAI")              
-                  
-    def set_initiation(self,nCalc,state):
-        self.write(':INIT%s:CONT %s'%(nCalc,state))              
-
-    def set_search_max(self,nCalc,nMark):          
-        self.write('CALC%s:MARK%s:FUNC:TYPE MAX'%(nCalc,nMark))
-                  
-    def set_bw_search_on(selfnCalc,mark,THR):
-        self.write(':CALC%s:MARK%s:BWID ON'%(nCalc,mark))
-        self.write(':CALC%s:MARK%s:BWID:THR %s'%(nCalc,mark,THR))
-
-    def execute_marker(self,nCalc,par,marker):
-        self.write('CALC%s:PAR%s:SEL'%(nCalc,par))
-        self.write('CALC%s:MARK%s:FUNC:EXEC'%(nCalc,marker))             
-
-    def get_quality(self,nCalc,mark):
-        resp=self.ask(':CALC%s:MARK%s:BWID:DATA?'%(nCalc,mark))    
-        return map(float,resp.split(','))
-
-    def set_one_sweep(self,i,nPeaks):
-
-        for j in range(1,nPeaks+1):
-            if j==i:
-                sself.et_initiation(i,'ON')
-                
-            else:
-                self.set_initiation(j,'OFF')
-                   
-    '''
-    def read(self,calc):
-        data = self.ask(':CALC%s:DATA:FDAT?'%calc)
-        d=map(float,data.split(','))
-        amp=[d[i] for i in range (0,len(dd),2)]
-        pha=[d[i] for i in range (0,len(dd),2)]          
-        return amp
-    '''
-    def get_trace(self,calc,startf,stopf,nop):
-        data = self.ask(':CALC%s:DATA:FDAT?'%calc)
-        d=map(float,data.split(','))
-        amp=[d[i] for i in range (0,len(d),2)]
-        pha=[d[i] for i in range (1,len(d),2)]
-        x=np.linspace(startf,stopf,num=nop,endpoint=True)
-        amp=np.array(amp)
-        pha=np.array(pha)
-        
-        return x,amp,pha
-                  
-    def set_output(self,state):
-        self.write(':OUTP %s'%(state))
-        
-    # toto funguje
-    #:SENSe{[1]|2|3|4}:SEGMent:DATA 5,<mode>,<ifbw>,<pow>,<del>,<time>,<segm>,
-    #agi.write("SENS1:SEGM:DATA 5,0,1,1,0,0,1,1E9,2E9,201,300,0")
-    #agi.write("SENSe2:SEGMent:DATA 3,1,1,1,1")
-
-    def set_frequency_range(self,sens,start,stop):
-        self.write(':SENS%s:FREQ:STAR %s' %(sens,start))
-        self.write(':SENS%s:FREQ:stop %s' %(sens,stop))
-
-    def set_nop(self,sens,nop):
-        self.write("SENS%s:SWE:POIN %f" %(sens,nop))
-
-    def set_BW(self,sens,bw):
-        self.write(':SENS%s:BAND %f'%(sens,bw))
-                  
-    def set_BWID(self,calc,mark,bwid):
-        self.write('CALC%s:MARK%s:BWID %f'%(calc,mark,bwid))
-                  
-    def set_marker_on(self,calc,mark):
-        self.write("CALC%s:MARK%s ON"%(calc,mark))
-
-    def set_trigger_mode(self,mode):
-        self.write("TRIG:SOUR %s"%(mode))
-
-    def set_sweep_mode(self,sens,mode):
-        self.write("SENS%s:SWE:MODE %s"%(sens,mode))
-
-    def set_power(self,sour,power):
-        self.write(':SOUR%s:POW %s' %(sour,power))
-
-
-    def find_max(self,calc,mark):
-        self.write('CALC%s:MARK%s:FUNC:EXEC MAX'%(calc,mark))
-
-    def get_bwid(self,calc,mark):
-        resp = self.ask('CALC%s:MARK%s:BWID?'%(calc,mark))
-        return map(float,resp.split(','))          
-
     def get_errs(self):
-        #matus
         ret='Network analyzer errors: '
         err = self.ask('syst:err?')
         ret+=err
@@ -170,37 +34,35 @@ class Agilent_E5062A(Instrument):
         return ret
 
     def set_transM_meas(self, power, f1, f2, nf, ifbw, avg):
-        #matus
         self.write('*cls')          
         self.write('*rst')
 
-        self.write('SYST:PRES')
-        self.write('SOUR:POW %f' %power)
-        self.write('CALC:PAR:COUN 1')
-        self.write('CALC:PAR:DEF S21')
-        self.write('DISP:WIND:ACT')
-        self.write('CALC:FORM PLOG')
-        self.write('TRIG:SOUR BUS')
-        self.write('INIT:CONT ON')
-        self.write("TRIG:SING;*WAI")
+        self.write('syst:pres')
+        self.write('sour:pow %f' %power)
+        self.write('calc:par:coun 1')
+        self.write('calc:par:def S21')
+        self.write('disp:wind:act')
+        self.write('calc:form plog')
+        self.write('trig:sour bus')
+        self.write('init:cont on')
+        self.write('trig:sing;*wai')
         sleep(0.2)
       
-        self.write('SENS:FREQ:STAR %f' %f1)
-        self.write('SENS:FREQ:STOP %f' %f2)
-        self.write('SENS:SWE:POIN %i' %nf)    
-        self.write('SENS:BAND %f' %ifbw)
-        self.write('SENS:AVER ON')
-        self.write('SENS:AVER:COUN %i' %avg)
+        self.write('sens:freq:star %f' %f1)
+        self.write('sens:freq:stop %f' %f2)
+        self.write('sens:swe:poin %i' %nf)    
+        self.write('sens:band %f' %ifbw)
+        self.write('sens:aver on')
+        self.write('sens:aver:coun %i' %avg)
 
     def run_transM_meas(self, avg):
-        #matus
-        self.write('SENS:AVER:CLE')
-        self.write('OUTP ON')
-        self.write('INIT:CONT ON')
+        self.write('sens:aver:cle')
+        self.write('outp on')
+        self.write('init:cont on')
         self.write(self.trigger_repeat(avg))
         self.ask('*opc?') #operation complete?
-        self.write('OUTP OFF')
-        dr = self.ask('CALC:DATA:FDAT?')
+        self.write('outp off')
+        dr = self.ask('calc:data:fdat?')
         
         d=map(float,dr.split(','))
         amp=np.array([d[j] for j in range (0,len(d),2)])
@@ -209,8 +71,72 @@ class Agilent_E5062A(Instrument):
         return amp, pha
 
     def trigger_repeat(self, N):
-        #matus
         ret=''
-        for _ in range(N): ret+=':TRIG:SING;*WAI;'
+        for _ in range(N): ret+=':trig:sing;*wai;'
         return ret        
+
+    def prelocate(self, peak, region, span):
+        from ..peak_lorentz_fit import find_fit_region, fit_lorentz
+        
+        amp, phs = self.run_transM_meas(peak[5])
+        peak_params = self.get_peak_params()
+
+        f = np.linspace(peak[2], peak[3], peak[4])
+        fit_params0 = [
+            10**(peak_params[3]/10.),
+            peak_params[0],
+            peak_params[1],
+            10**(-10)
+            ]      #[loss(lin.), half-bandwidth, center_freq, offs(lin.)]        
+
+        startp, stopp = find_fit_region(
+            peak[2], peak[3], peak[4], peak_params[1], region)#fiting region
+        
+        fit_params, chi = fit_lorentz(
+            f[startp:stopp],
+            10**(amp[startp:stopp]/10.),
+            fit_params0,
+            chi_out=True)#fiting
+
+        self.autoadjust_freq(peak, fit_params, span)
+        
+    def autoadjust_freq(self, peak, fit_params, span):
+        peak[2] = fit_params[2]*(1-span*2.*fit_params[1]/fit_params[2])
+        peak[3] = fit_params[2]*(1+span*2.*fit_params[1]/fit_params[2])
+        self.write('sens:freq:star %f' %peak[2])
+        self.write('sens:freq:stop %f' %peak[3])
+        
+    def set_power_ifbw(self, power_dBm, power_dBm_ref, ifbw_ref):
+        '''
+        setting the IFBW according to applied power to get similar
+        level of noise. IFBW is adjusted to power_ref_dBm and ifbw_ref
+        '''
+        ifbws = [10, 30, 100, 300, 1e3, 3e3, 10e3, 30e3]
+
+        ifbw_calc = ifbw_ref*10**((power_dBm-power_dBm_ref)/10)
+
+        ifbw = ifbws[-1]
+        for i in ifbws:
+            if ifbw_calc <= i:
+                ifbw = i
+                break
+
+        self.write('sour:pow %f' %power_dBm)
+        self.write('sens:band %f' %ifbw)
+
+        return ifbw
+
+    def get_peak_params(self):
+        '''
+        autoscales window with i-th measurement and returns list:
+        [bandwidth, center_freq, Q, loss]
+        '''
+        self.write('disp:wind:trac:y:auto') #autoscale
+        self.write('calc:mark1 ON')
+        self.write('calc:mark1:func:type MAX')
+        self.write('calc:mark1:func:exec')
+        self.write('calc:mark1:bwid on')
+        self.write('calc:mark1:bwid:thr -3')
+        resp = self.ask('calc:mark1:bwid:data?')
+        return map(float, resp.split(','))
 #Here you can add new methods
