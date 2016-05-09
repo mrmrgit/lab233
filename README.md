@@ -1,6 +1,17 @@
-Works only on Windows. And still under construction.
+UNDER CONSTRUCTION
 
-NOTE: I am not responsible for methods in device modules. Anyone from the lab can add his own and use them in his own measurement scripts. 
+Some helpful modules for data acquisition, lorentzian peak fitting, plotting (using gnuplot).
 
-Next step: Do not plot data with pyROOT but use GNUPLOT instead.
-Then: Write modules for remaining devices.
+devices - wrappers for some laboratory devices.
+
+Works on Windows 7, 
+with:
+python 2.7.4 (32bit)
+gnuplot 4.6 patchlevel 6
++ drivers for the devices
+
+python packages:
+pyvisa 1.4
+numpy 1.9.2
+scipy 0.16.0
+matplotlib 1.1.0
