@@ -65,6 +65,8 @@ class PyGnuplot(object):
         
         if file_path and (not os.path.exists(file_path)):
             os.makedirs(file_path)
+
+        if pause < 1.0: pause = 1.0
             
         # create list of GNUPLOT commands
         # GNUPLOT documentaion:
