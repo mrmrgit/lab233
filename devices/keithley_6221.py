@@ -32,21 +32,23 @@ class Keithley_6221(Instrument):
             it+=1
             if it==100: break
         return ret
-    
+
+    def set_current(self, cur):
+        self.write('sour:curr %f' %cur)
+        
     def set_for_meas(self, compl, cur_range):
-        self.clear()
-        self.set_volt_comp(compl)
-        self.auto_range_off()
-        self.set_curr_range(cur_range)
-        self.output_on()
+        self.write('sour:cle')
+        self.write('curr:comp %f'%compl)
+        self.write('sour:curr:rang:auto off')
+        self.write('sour:curr:rang %f'%cur_range)
+        self.write('outp:stat on')
         
     def set_for_magnet(self, cur):
-        self.clear()
-        self.reset()
-        self.auto_range_on()
-        #self.set_range(1e-5)
-        self.output_on()
-        self.set_current(cur)
+        self.write('sour:cle')
+        self.write('*rst')
+        self.write('sour:curr:rang:auto on')
+        self.write('outp:stat on')
+        self.write('sour:curr %f' %cur)
 
     def set_for_switch(self):
         self.write('*rst')
