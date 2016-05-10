@@ -1,5 +1,5 @@
 '''
-Socket server on localhost (port 50007). It serves for communication between
+Socket server on localhost (port 50107). It serves for communication between
 Oxford instruments Intelligent Temperature Controller for HelioxAC-V 3He
 Refrigerator System and measurement scripts. Communication to the device
 via the server should be used when multiple scripts using the device are to
@@ -22,11 +22,9 @@ COMMANDS:
 'GET:PTC2:TEMP'   - returns PTC2 temperature
 'GET:HSW:TEMP'    - returns heat-switch temperature
 'GET:SORB:TEMP'   - returns sorbtion pump temperature
+'CLOSE'           - terminates connection to server
 
 NOTE: commands are case insensitive.
----------------------------------------------------------------
-
-Matus Rehak
 '''
 
 import socket
@@ -97,6 +95,10 @@ def comm_func(message_in):
         message_out = 'SORB:TEMP %.3f'%temp
         server_message = 'SORB:TEMP is %.3f'%temp
 
+    elif cmd == 'CLOSE':
+        message_out = 'connection closed'
+        server_message = 'connection closed'
+        
     else:
         message_out = 'Unknown command!'
         server_message = 'Unknown command!'
@@ -118,14 +120,19 @@ try:
     def return_message(conn,addr):
         global rdy_to_go
         while True:
+            conn_active = True
             if rdy_to_go:
                 data_in = conn.recv(1024) #wait until data received
-                if not data_in: break
+                #if not data_in: break #?????????????????????????????
                 rdy_to_go = False
                 data_out, server_msg = comm_func(data_in)
                 rdy_to_go = True
                 print(addr[0]+':'+str(addr[1])+'\t'+str(server_msg))
                 conn.sendall(data_out)
+                if server_msg == 'connection closed':
+                    conn_active = False
+                    break
+            #if not conn_active: break#??????
         conn.close()
         #time.sleep(5)
         

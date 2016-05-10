@@ -15,9 +15,6 @@ import oxford_ITC
 itc = oxford_ITC.init_device()      #initialization
 itc.get_ptc2_temp()                 #user's defined method
 itc.close()                         #visa.Instrument method
----------------------------------------------------------------
-
-Matus Rehak
 '''
 
 from visa import SerialInstrument

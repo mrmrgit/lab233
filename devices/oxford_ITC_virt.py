@@ -3,7 +3,7 @@ This module has the same functionality as the oxford_ITC wrapper, however
 using this module, it is possible to use the device (Oxford instruments
 Intelligent Temperature Controller for HelioxAC-V 3He Refrigerator System)
 in more scripts.
-When initiated, it starts the server on localhost (port 500007) which
+When initiated, it starts the server on localhost (port 50107) which
 directly communicates with the device. Communication between the script
 and the server is established using simple socket protocol.
 
@@ -13,24 +13,15 @@ itc = oxford_ITC_virt.init_device()
 itc.turn_hsw_on()
 print(itc.get_sample_temp())
 itc.close()
----------------------------------------------------------------
-
-Matus Rehak
 '''
 
 import socket
 import time
-import os
-import site
-
+import os.path
 
 #run oxford_ITC_server if it is not already started
-STP = site.getsitepackages()[1] #Path to site-packages. Only windows!!!
-CUR_DIR = os.getcwd()           #current working directory
-
-os.chdir(STP+'\\lab233\\devices')
-os.system('START python oxford_ITC_server.py')
-os.chdir(CUR_DIR)
+PATH = os.path.join(os.path.dirname(__file__), 'oxford_ITC_server.py')
+os.system('START python ' + PATH)
 
 def init_device():
     itc_virt = Oxford_ITC_virt()
@@ -97,6 +88,8 @@ class Oxford_ITC_virt:
         Closes the socket. Afterwards, no communication is available until
         new initialization.
         '''
+        self.write('CLOSE')
+        self.read()                 #cleaning input buffer
         self._skt.close()
         self._skt = None
 
