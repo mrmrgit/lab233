@@ -21,7 +21,8 @@ class PyGnuplot(object):
                  plots,
                  pause = 1.0,
                  savefig = True,
-                 file_path = ''):
+                 file_path = '',
+                 size = (640, 480)):
         '''
         plotfile - string without extension, .gnu is added automatically
         pltofile_name.gnu - source file for gnuplot for creation of the plot
@@ -94,7 +95,7 @@ class PyGnuplot(object):
             
         if savefig:
             line_list.extend([
-                'set term png',
+                'set term png size %i,%i' %(size[0], size[1]),
                 'set output "%s.png"'%(os.path.join(
                     file_path, plotfile_name).replace('\\','\\\\')
                                        )
@@ -102,7 +103,7 @@ class PyGnuplot(object):
             line_list.extend(multiplot_list)
             line_list.append('unset output ') 
         
-        line_list.append('set term wxt')
+        line_list.append('set term wxt size %i,%i' %(size[0], size[1]))
         line_list.extend(multiplot_list)
         line_list.extend(['pause %f'%pause,'reread'])
 
